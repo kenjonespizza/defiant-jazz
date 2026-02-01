@@ -1,6 +1,6 @@
 {
   "name": "defiant-jazz",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "description": "Transform quotes into Severance character voices using OpenAI",
   "license": "MIT",
   "author": "kenjonespizza",

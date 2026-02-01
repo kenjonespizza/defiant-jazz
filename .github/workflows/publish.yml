@@ -21,6 +21,9 @@ jobs:
 
       - run: pnpm install
 
+      - name: Setup npm auth
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}" > ~/.npmrc
+
       - name: Publish
         run: |
           if [ "${{ github.event.release.prerelease }}" = "true" ]; then

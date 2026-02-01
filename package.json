@@ -1,10 +1,21 @@
 {
   "name": "defiant-jazz",
-  "version": "0.0.2",
-  "description": "",
+  "version": "0.2.0",
+  "description": "Transform quotes into Severance character voices using OpenAI",
   "license": "MIT",
   "author": "kenjonespizza",
   "type": "module",
+  "keywords": [
+    "severance",
+    "openai",
+    "ai",
+    "text-transform",
+    "lumon"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kenjonespizza/defiant-jazz-package.git"
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -16,7 +27,11 @@
   ],
   "scripts": {
     "build": "tsc",
+    "dev": "tsc --watch",
     "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "openai": "^4.77.0"
   },
   "devDependencies": {
     "typescript": "^5.9.3"

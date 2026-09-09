@@ -101,7 +101,7 @@ describe("provider resolution", () => {
     expect(openaiCreate).not.toHaveBeenCalled();
   });
 
-  it("falls back to OpenAI (with a deprecation warning) when only OPENAI_API_KEY is set", async () => {
+  it("falls back to OpenAI when only OPENAI_API_KEY is set", async () => {
     process.env.OPENAI_API_KEY = "sk-test";
     openaiCreate.mockResolvedValue({
       choices: [{ message: { content: "mocked openai" } }],
@@ -113,8 +113,24 @@ describe("provider resolution", () => {
     const result = await dj.dylan("hello");
 
     expect(result).toEqual({ text: "mocked openai", character: "Dylan G." });
-    expect(warnSpy).toHaveBeenCalledWith(expect.stringContaining("deprecated"));
+    expect(warnSpy).not.toHaveBeenCalled();
     warnSpy.mockRestore();
+  });
+
+  it("uses OpenAI when provider: 'openai' is explicit, even with both keys set", async () => {
+    process.env.ANTHROPIC_API_KEY = "sk-ant-test";
+    process.env.OPENAI_API_KEY = "sk-test";
+    openaiCreate.mockResolvedValue({
+      choices: [{ message: { content: "mocked openai" } }],
+    });
+
+    const { createDefiantJazz } = await import("../index.js");
+    const dj = createDefiantJazz({ provider: "openai" });
+    const result = await dj.dylan("hello");
+
+    expect(result).toEqual({ text: "mocked openai", character: "Dylan G." });
+    expect(openaiCreate).toHaveBeenCalledTimes(1);
+    expect(anthropicCreate).not.toHaveBeenCalled();
   });
 
   it("prefers an explicit apiKey option over env vars", async () => {

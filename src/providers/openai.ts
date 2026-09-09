@@ -1,4 +1,3 @@
-// Bridge-release only. Removed in v1.0.0 — see the migration plan.
 import OpenAI from "openai";
 import { SYSTEM_PROMPT } from "../prompt.js";
 import type { RefineOptions } from "../types.js";

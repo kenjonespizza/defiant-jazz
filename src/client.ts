@@ -11,17 +11,6 @@ import type {
   RefineResult,
 } from "./types.js";
 
-let warnedAboutOpenAi = false;
-
-function warnOpenAiDeprecatedOnce(): void {
-  if (warnedAboutOpenAi) return;
-  warnedAboutOpenAi = true;
-  console.warn(
-    "[defiant-jazz] OpenAI support is deprecated and will be removed in v1.0.0. " +
-      "Set ANTHROPIC_API_KEY to switch to Claude."
-  );
-}
-
 function resolveProvider(options: DefiantJazzOptions): {
   provider: Provider;
   apiKey: string;
@@ -39,7 +28,6 @@ function resolveProvider(options: DefiantJazzOptions): {
         } or pass apiKey.`
       );
     }
-    if (options.provider === "openai") warnOpenAiDeprecatedOnce();
     return { provider: options.provider, apiKey };
   }
 
@@ -52,12 +40,12 @@ function resolveProvider(options: DefiantJazzOptions): {
   }
 
   if (process.env.OPENAI_API_KEY) {
-    warnOpenAiDeprecatedOnce();
     return { provider: "openai", apiKey: process.env.OPENAI_API_KEY };
   }
 
   throw new Error(
-    "No API key found. Set ANTHROPIC_API_KEY (or pass apiKey to configure()/createDefiantJazz())."
+    "No API key found. Set ANTHROPIC_API_KEY or OPENAI_API_KEY " +
+      "(or pass apiKey/provider to configure()/createDefiantJazz())."
   );
 }
 

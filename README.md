@@ -1,6 +1,6 @@
 # defiant-jazz
 
-Transform quotes into Severance character voices, powered by Claude.
+Transform quotes into Severance character voices, using Claude or OpenAI.
 
 ```bash
 npm install defiant-jazz
@@ -26,23 +26,33 @@ await refine.milchick("..."); // Mr. Milchick - cheerful, corporate
 await refine("Hello world", "dylan");
 ```
 
-Set `ANTHROPIC_API_KEY` in your environment and you're done.
+Set `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` in your environment and you're done —
+whichever is present is used automatically (Anthropic first if both are set).
 
-## Multiple instances
-
-`refine` is a shared default. If you need an isolated instance — different
-API keys per request, a non-default model, testing — use the factory:
+## Choosing a provider
 
 ```typescript
 import { createDefiantJazz } from 'defiant-jazz';
 
-const dj = createDefiantJazz({
+const claude = createDefiantJazz({
+  provider: 'anthropic',
   apiKey: 'sk-ant-...',
   model: 'claude-opus-5', // optional, this is the default
 });
 
-await dj.dylan("Hello world");
+const gpt = createDefiantJazz({
+  provider: 'openai',
+  apiKey: 'sk-...',
+  model: 'gpt-4o-mini', // optional, this is the default
+});
+
+await claude.dylan("Hello world");
+await gpt.dylan("Hello world");
 ```
+
+`refine` is a shared default instance using auto-detected credentials. Use
+`createDefiantJazz()` whenever you need an isolated instance — a specific
+provider, different API keys per request, a non-default model, testing.
 
 Per-call overrides work on both forms:
 
@@ -57,14 +67,6 @@ import { CHARACTERS } from 'defiant-jazz';
 
 // { mark: "Mark S.", irving: "Irving B.", dylan: "Dylan G.", milchick: "Mr. Milchick" }
 ```
-
-## Migrating from OpenAI
-
-Versions before 1.0 also supported OpenAI. If you're upgrading:
-
-- Swap `OPENAI_API_KEY` for `ANTHROPIC_API_KEY`.
-- Drop any `model` override tied to an OpenAI model name (e.g. `gpt-4o-mini`) —
-  pass an Anthropic model instead, or omit it to use the default.
 
 ## License
 

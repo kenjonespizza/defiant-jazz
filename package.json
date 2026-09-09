@@ -1,13 +1,17 @@
 {
   "name": "defiant-jazz",
-  "version": "0.3.1",
-  "description": "Transform quotes into Severance character voices using OpenAI",
+  "version": "0.4.0",
+  "description": "Transform quotes into Severance character voices using Claude",
   "license": "MIT",
   "author": "kenjonespizza",
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "keywords": [
     "severance",
-    "openai",
+    "anthropic",
+    "claude",
     "ai",
     "text-transform",
     "lumon"
@@ -28,12 +32,16 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc --watch",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.124.0",
     "openai": "^4.77.0"
   },
   "devDependencies": {
-    "typescript": "^5.9.3"
+    "typescript": "^5.9.3",
+    "vitest": "^5.0.0"
   }
 }

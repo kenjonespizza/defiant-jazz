@@ -1,5 +1,4 @@
 import OpenAI from "openai";
-import { SYSTEM_PROMPT } from "../prompt.js";
 import type { RefineOptions } from "../types.js";
 
 const DEFAULT_MODEL = "gpt-4o-mini";
@@ -13,6 +12,7 @@ export async function runOpenAi(
   client: OpenAI,
   characterName: string,
   text: string,
+  systemPrompt: string,
   defaults: { model?: string; maxTokens?: number },
   options?: RefineOptions
 ): Promise<string> {
@@ -20,9 +20,8 @@ export async function runOpenAi(
     {
       model: options?.model ?? defaults.model ?? DEFAULT_MODEL,
       max_tokens: options?.maxTokens ?? defaults.maxTokens ?? DEFAULT_MAX_TOKENS,
-      temperature: 0.7,
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: systemPrompt },
         {
           role: "user",
           content: `Transform this quote in the style of ${characterName}: "${text}"`,

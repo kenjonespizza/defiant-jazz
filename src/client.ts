@@ -2,7 +2,7 @@ import type Anthropic from "@anthropic-ai/sdk";
 import type OpenAI from "openai";
 import { createAnthropicClient, runAnthropic } from "./providers/anthropic.js";
 import { createOpenAiClient, runOpenAi } from "./providers/openai.js";
-import { CHARACTERS } from "./prompt.js";
+import { buildSystemPrompt, CHARACTERS } from "./prompt.js";
 import type {
   CharacterKey,
   DefiantJazzOptions,
@@ -80,6 +80,20 @@ export function createDefiantJazz(initialOptions: DefiantJazzOptions = {}): Defi
     characterKey: CharacterKey,
     options?: RefineOptions
   ): Promise<RefineResult> {
+    if (characterKey !== null && typeof characterKey === "object") {
+      throw new Error(
+        'Expected a character key (e.g. "dylan") but received an options object. ' +
+          "Did you mean refine(text, character, options) or refine.dylan(text, options)?"
+      );
+    }
+
+    if (!Object.prototype.hasOwnProperty.call(CHARACTERS, characterKey)) {
+      const validKeys = Object.keys(CHARACTERS).join(", ");
+      throw new Error(
+        `Unknown character: "${String(characterKey)}". Expected one of: ${validKeys}`
+      );
+    }
+
     if (!text || text.trim().length === 0) {
       throw new Error("Text is required and cannot be empty");
     }
@@ -87,11 +101,13 @@ export function createDefiantJazz(initialOptions: DefiantJazzOptions = {}): Defi
     const characterName = CHARACTERS[characterKey];
     const { provider, client } = getClient();
     const defaults = { model: config.model, maxTokens: config.maxTokens };
+    const lore = options?.lore ?? config.lore ?? true;
+    const systemPrompt = buildSystemPrompt(lore);
 
     const resultText =
       provider === "anthropic"
-        ? await runAnthropic(client as Anthropic, characterName, text, defaults, options)
-        : await runOpenAi(client as OpenAI, characterName, text, defaults, options);
+        ? await runAnthropic(client as Anthropic, characterName, text, systemPrompt, defaults, options)
+        : await runOpenAi(client as OpenAI, characterName, text, systemPrompt, defaults, options);
 
     return { text: resultText, character: characterName };
   }

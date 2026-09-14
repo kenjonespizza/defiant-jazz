@@ -1,8 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
-import { SYSTEM_PROMPT } from "../prompt.js";
 import type { RefineOptions } from "../types.js";
 
-const DEFAULT_MODEL = "claude-opus-5";
+const DEFAULT_MODEL = "claude-sonnet-5";
 const DEFAULT_MAX_TOKENS = 4096;
 
 export function createAnthropicClient(apiKey: string): Anthropic {
@@ -13,6 +12,7 @@ export async function runAnthropic(
   client: Anthropic,
   characterName: string,
   text: string,
+  systemPrompt: string,
   defaults: { model?: string; maxTokens?: number },
   options?: RefineOptions
 ): Promise<string> {
@@ -21,7 +21,7 @@ export async function runAnthropic(
       {
         model: options?.model ?? defaults.model ?? DEFAULT_MODEL,
         max_tokens: options?.maxTokens ?? defaults.maxTokens ?? DEFAULT_MAX_TOKENS,
-        system: SYSTEM_PROMPT,
+        system: systemPrompt,
         messages: [
           {
             role: "user",

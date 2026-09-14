@@ -20,7 +20,6 @@ export async function runOpenAi(
     {
       model: options?.model ?? defaults.model ?? DEFAULT_MODEL,
       max_tokens: options?.maxTokens ?? defaults.maxTokens ?? DEFAULT_MAX_TOKENS,
-      temperature: 0.7,
       messages: [
         { role: "system", content: SYSTEM_PROMPT },
         {

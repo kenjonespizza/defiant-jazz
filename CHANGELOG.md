@@ -2,6 +2,23 @@
 
 All notable changes to this package are documented here.
 
+## 0.6.2
+
+### Changed
+
+- **Breaking (for anyone not pinning `model` explicitly):** lowered the
+  Anthropic provider's default model from `claude-opus-5` to
+  `claude-sonnet-5`. A head-to-head comparison across Opus 5, Sonnet 5, and
+  Haiku 4.5 — rerun after the 0.6.1 prompt change to check the ranking still
+  held — found Sonnet 5 matched Opus 5's output quality (occasionally
+  exceeding it) at 40% of the cost, with no regressions across either
+  prompt version. Haiku 4.5 was ruled out as a default after a documented
+  regression: a near-empty response on one probe quote that didn't engage
+  with the 0.6.1 emotional-theme layer at all. Full writeup, including both
+  runs' outputs side by side, in
+  [model-comparison.md](model-comparison.md). The OpenAI default
+  (`gpt-4o-mini`) is untouched — out of scope for this comparison.
+
 ## 0.6.1
 
 ### Changed

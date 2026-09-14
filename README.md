@@ -30,6 +30,14 @@ await refine("Hello world", "dylan");
 Set `ANTHROPIC_API_KEY` or `OPENAI_API_KEY` in your environment and you're done —
 whichever is present is used automatically (Anthropic first if both are set).
 
+**Default models: `claude-sonnet-5` (Anthropic), `gpt-4o-mini` (OpenAI).**
+Sonnet 5 was chosen over Opus 5 after a head-to-head comparison found
+matching output quality at 40% of the cost — see
+[model-comparison.md](model-comparison.md) for the full writeup, including a
+documented regression on Haiku 4.5 that ruled it out as a default. Override
+with `model` on `createDefiantJazz()` or per call; see
+[Choosing a provider](#choosing-a-provider).
+
 ## Lore
 
 By default, characters reach for Lumon/*Severance* vocabulary — the break
@@ -70,7 +78,7 @@ import { createDefiantJazz } from 'defiant-jazz';
 const claude = createDefiantJazz({
   provider: 'anthropic',
   apiKey: 'sk-ant-...',
-  model: 'claude-opus-5', // optional, this is the default
+  model: 'claude-sonnet-5', // optional, this is the default — see model-comparison.md
 });
 
 const gpt = createDefiantJazz({

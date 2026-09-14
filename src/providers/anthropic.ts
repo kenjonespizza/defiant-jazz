@@ -1,7 +1,7 @@
 import Anthropic from "@anthropic-ai/sdk";
 import type { RefineOptions } from "../types.js";
 
-const DEFAULT_MODEL = "claude-opus-5";
+const DEFAULT_MODEL = "claude-sonnet-5";
 const DEFAULT_MAX_TOKENS = 4096;
 
 export function createAnthropicClient(apiKey: string): Anthropic {

@@ -2,6 +2,36 @@
 
 All notable changes to this package are documented here.
 
+## 0.6.1
+
+### Changed
+
+- Added a light emotional-theme layer alongside each character's existing
+  Lumon stance in the lore prompt — a one-clause undercurrent per character
+  (Mark: grief without memory of what's grieved; Irving: devotion that costs
+  him the relationship that made it bearable; Dylan: wanting the reward more
+  than he'd admit; Milchick: the exhaustion of performing warmth nobody
+  chose). This is tone, not a new countable reference — it rides the
+  existing "at most one Lumon term" restraint rules rather than adding a
+  parallel budget, and does not touch the existing prohibition on
+  referencing plot events.
+
+  This was **not** an attempt to address the OpenAI stance-matrix gap noted
+  below — it's evaluated purely on whether it improves output quality,
+  primarily checked against Anthropic. Verified with a scripted before/after
+  transcript comparison (six quotes × four characters, generated on live
+  API calls both before and after the change) rather than ad hoc spot
+  checks; see `transcripts/` on the `feature/lore-themes` branch for the
+  raw comparison. Anthropic output showed genuine improvement in at least
+  two cases (Irving's closing "Praise Kier" on a purposelessness quote;
+  Milchick's threat of the break room surfacing unprompted when a
+  colleague wrongs him) with no loss of density discipline — the neutral
+  probe quote stayed completely clean in both runs. As a passive data
+  point (not a claim of having fixed anything), a rerun of the known-weak
+  OpenAI probe case did name "the break room" directly post-change, where
+  it hadn't in 0.6.0 testing — noted for whoever eventually builds the
+  proper eval set, not treated as resolution here.
+
 ## 0.6.0
 
 ### Known limitation

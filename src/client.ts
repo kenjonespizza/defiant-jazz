@@ -80,6 +80,20 @@ export function createDefiantJazz(initialOptions: DefiantJazzOptions = {}): Defi
     characterKey: CharacterKey,
     options?: RefineOptions
   ): Promise<RefineResult> {
+    if (characterKey !== null && typeof characterKey === "object") {
+      throw new Error(
+        'Expected a character key (e.g. "dylan") but received an options object. ' +
+          "Did you mean refine(text, character, options) or refine.dylan(text, options)?"
+      );
+    }
+
+    if (!Object.prototype.hasOwnProperty.call(CHARACTERS, characterKey)) {
+      const validKeys = Object.keys(CHARACTERS).join(", ");
+      throw new Error(
+        `Unknown character: "${String(characterKey)}". Expected one of: ${validKeys}`
+      );
+    }
+
     if (!text || text.trim().length === 0) {
       throw new Error("Text is required and cannot be empty");
     }

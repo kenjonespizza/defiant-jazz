@@ -79,6 +79,50 @@ describe("input validation", () => {
   });
 });
 
+describe("character validation", () => {
+  it("throws on an unknown character key and lists the valid ones", async () => {
+    process.env.ANTHROPIC_API_KEY = "sk-ant-test";
+    const { createDefiantJazz } = await import("../index.js");
+    const dj = createDefiantJazz();
+
+    // @ts-expect-error - deliberately passing an invalid character key
+    await expect(dj("hello", "milcheck")).rejects.toThrow(
+      /Unknown character: "milcheck".*mark, irving, dylan, milchick/
+    );
+    expect(anthropicCreate).not.toHaveBeenCalled();
+  });
+
+  it("throws when an options object is passed in the character position", async () => {
+    process.env.ANTHROPIC_API_KEY = "sk-ant-test";
+    const { createDefiantJazz } = await import("../index.js");
+    const dj = createDefiantJazz();
+
+    // @ts-expect-error - deliberately passing an options object as the character
+    await expect(dj("hello", { lore: false })).rejects.toThrow(
+      /received an options object.*refine\(text, character, options\)/
+    );
+    expect(anthropicCreate).not.toHaveBeenCalled();
+  });
+
+  it("still accepts valid character keys via both call shapes", async () => {
+    process.env.ANTHROPIC_API_KEY = "sk-ant-test";
+    anthropicCreate.mockResolvedValue({
+      content: [{ type: "text", text: "mocked" }],
+    });
+    const { createDefiantJazz } = await import("../index.js");
+    const dj = createDefiantJazz();
+
+    await expect(dj("hello", "dylan")).resolves.toEqual({
+      text: "mocked",
+      character: "Dylan G.",
+    });
+    await expect(dj.dylan("hello")).resolves.toEqual({
+      text: "mocked",
+      character: "Dylan G.",
+    });
+  });
+});
+
 describe("provider resolution", () => {
   it("throws a useful error when no API key is set", async () => {
     const { createDefiantJazz } = await import("../index.js");

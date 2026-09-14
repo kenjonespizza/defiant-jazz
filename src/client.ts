@@ -2,7 +2,7 @@ import type Anthropic from "@anthropic-ai/sdk";
 import type OpenAI from "openai";
 import { createAnthropicClient, runAnthropic } from "./providers/anthropic.js";
 import { createOpenAiClient, runOpenAi } from "./providers/openai.js";
-import { CHARACTERS } from "./prompt.js";
+import { buildSystemPrompt, CHARACTERS } from "./prompt.js";
 import type {
   CharacterKey,
   DefiantJazzOptions,
@@ -101,11 +101,13 @@ export function createDefiantJazz(initialOptions: DefiantJazzOptions = {}): Defi
     const characterName = CHARACTERS[characterKey];
     const { provider, client } = getClient();
     const defaults = { model: config.model, maxTokens: config.maxTokens };
+    const lore = options?.lore ?? config.lore ?? true;
+    const systemPrompt = buildSystemPrompt(lore);
 
     const resultText =
       provider === "anthropic"
-        ? await runAnthropic(client as Anthropic, characterName, text, defaults, options)
-        : await runOpenAi(client as OpenAI, characterName, text, defaults, options);
+        ? await runAnthropic(client as Anthropic, characterName, text, systemPrompt, defaults, options)
+        : await runOpenAi(client as OpenAI, characterName, text, systemPrompt, defaults, options);
 
     return { text: resultText, character: characterName };
   }

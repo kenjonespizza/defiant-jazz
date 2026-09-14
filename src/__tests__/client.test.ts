@@ -237,3 +237,96 @@ describe("configure() / default instance", () => {
     expect(result.text).toBe("mocked");
   });
 });
+
+describe("lore toggle", () => {
+  it("includes lore by default", async () => {
+    process.env.ANTHROPIC_API_KEY = "sk-ant-test";
+    anthropicCreate.mockResolvedValue({
+      content: [{ type: "text", text: "mocked" }],
+    });
+
+    const { createDefiantJazz } = await import("../index.js");
+    const dj = createDefiantJazz();
+    await dj.dylan("hello");
+
+    const systemPrompt = anthropicCreate.mock.calls[0][0].system;
+    expect(systemPrompt).toMatch(/break room/);
+  });
+
+  it("omits lore when { lore: false } is passed per-call", async () => {
+    process.env.ANTHROPIC_API_KEY = "sk-ant-test";
+    anthropicCreate.mockResolvedValue({
+      content: [{ type: "text", text: "mocked" }],
+    });
+
+    const { createDefiantJazz } = await import("../index.js");
+    const dj = createDefiantJazz();
+    await dj.dylan("hello", { lore: false });
+
+    const systemPrompt = anthropicCreate.mock.calls[0][0].system;
+    expect(systemPrompt).not.toMatch(/break room/);
+  });
+
+  it("omits lore instance-wide when createDefiantJazz({ lore: false }) is used", async () => {
+    process.env.ANTHROPIC_API_KEY = "sk-ant-test";
+    anthropicCreate.mockResolvedValue({
+      content: [{ type: "text", text: "mocked" }],
+    });
+
+    const { createDefiantJazz } = await import("../index.js");
+    const dj = createDefiantJazz({ lore: false });
+    await dj.dylan("hello");
+
+    const systemPrompt = anthropicCreate.mock.calls[0][0].system;
+    expect(systemPrompt).not.toMatch(/break room/);
+  });
+
+  it("lets a per-call { lore: true } override an instance-level lore: false", async () => {
+    process.env.ANTHROPIC_API_KEY = "sk-ant-test";
+    anthropicCreate.mockResolvedValue({
+      content: [{ type: "text", text: "mocked" }],
+    });
+
+    const { createDefiantJazz } = await import("../index.js");
+    const dj = createDefiantJazz({ lore: false });
+    await dj.dylan("hello", { lore: true });
+
+    const systemPrompt = anthropicCreate.mock.calls[0][0].system;
+    expect(systemPrompt).toMatch(/break room/);
+  });
+
+  it("respects the toggle on the OpenAI path too", async () => {
+    process.env.OPENAI_API_KEY = "sk-test";
+    openaiCreate.mockResolvedValue({
+      choices: [{ message: { content: "mocked openai" } }],
+    });
+
+    const { createDefiantJazz } = await import("../index.js");
+
+    const withLore = createDefiantJazz();
+    await withLore.dylan("hello");
+    const loreSystemMessage = openaiCreate.mock.calls[0][0].messages[0].content;
+    expect(loreSystemMessage).toMatch(/break room/);
+
+    const withoutLore = createDefiantJazz({ lore: false });
+    await withoutLore.dylan("hello");
+    const plainSystemMessage = openaiCreate.mock.calls[1][0].messages[0].content;
+    expect(plainSystemMessage).not.toMatch(/break room/);
+  });
+});
+
+describe("buildSystemPrompt", () => {
+  it("includes character names regardless of the lore setting", async () => {
+    const { buildSystemPrompt } = await import("../prompt.js");
+
+    expect(buildSystemPrompt(true)).toMatch(/Mark S\./);
+    expect(buildSystemPrompt(false)).toMatch(/Mark S\./);
+  });
+
+  it("only includes lore markers when lore is true", async () => {
+    const { buildSystemPrompt } = await import("../prompt.js");
+
+    expect(buildSystemPrompt(true)).toMatch(/break room/);
+    expect(buildSystemPrompt(false)).not.toMatch(/break room/);
+  });
+});
